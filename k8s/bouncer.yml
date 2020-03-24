@@ -13,7 +13,7 @@ metadata:
   namespace: netdata-auto-discovery
 rules:
   - apiGroups:
-      - "env"
+      - "apps"
     resources:
       - deployments
     verbs:
@@ -40,7 +40,7 @@ subjects:
 
 ---
 
-apiVersion: env/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bouncer
