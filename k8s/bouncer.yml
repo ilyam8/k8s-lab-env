@@ -61,5 +61,8 @@ spec:
       containers:
         - name: bouncer
           image: ilyam8/k8s-deployment-bouncer
+          env:
+            - name: BOUNCE_EVERY
+              value: "30"
 
 ---
