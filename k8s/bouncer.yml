@@ -60,7 +60,6 @@ spec:
       serviceAccountName: netdata-bouncer-service-account
       containers:
         - name: bouncer
-          image: bouncer
-          imagePullPolicy: Never
+          image: ilyam8/k8s-deployment-bouncer
 
 ---
