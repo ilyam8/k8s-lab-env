@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strconv"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -24,6 +25,18 @@ func newClientSet() (*kubernetes.Clientset, error) {
 	return clientset.OutOfCluster()
 }
 
+func bounceEvery() time.Duration {
+	v, ok := os.LookupEnv("BOUNCE_EVERY")
+	if !ok {
+		return 30
+	}
+	be, err := strconv.ParseUint(v, 10, 64)
+	if err != nil {
+		return 30
+	}
+	return time.Duration(be)
+}
+
 func main() {
 	log.SetFormatter(&log.TextFormatter{TimestampFormat: "15:04:05"})
 	c, err := newClientSet()
@@ -35,7 +48,7 @@ func main() {
 		LabelSelector: "",
 		FieldSelector: "",
 		RetryTimeout:  5 * time.Second,
-		BounceEvery:   30 * time.Second,
+		BounceEvery:   bounceEvery() * time.Second,
 		Client:        c.AppsV1().Deployments(namespace),
 	}
 
