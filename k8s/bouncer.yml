@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: netdata-bouncer-service-account
+  namespace: netdata-auto-discovery
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: netdata-bouncer-role
+  namespace: netdata-auto-discovery
+rules:
+  - apiGroups:
+      - "env"
+    resources:
+      - deployments
+    verbs:
+      - list
+      - get
+      - update
+      - watch
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: netdata-bouncer-role-binding
+  namespace: netdata-auto-discovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: netdata-bouncer-role
+subjects:
+  - kind: ServiceAccount
+    name: netdata-bouncer-service-account
+    namespace: netdata-auto-discovery
+
+---
+
+apiVersion: env/v1
+kind: Deployment
+metadata:
+  name: bouncer
+  namespace: netdata-auto-discovery
+  labels:
+    skipBounce: skip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: bouncer
+  template:
+    metadata:
+      labels:
+        component: bouncer
+    spec:
+      serviceAccountName: netdata-bouncer-service-account
+      containers:
+        - name: bouncer
+          image: bouncer
+          imagePullPolicy: Never
+
+---
