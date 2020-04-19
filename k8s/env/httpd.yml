@@ -61,6 +61,9 @@ spec:
       containers:
         - name: httpd
           image: httpd
+          resources:
+            requests:
+              cpu: 1m
           ports:
             - containerPort: 80
           volumeMounts:
