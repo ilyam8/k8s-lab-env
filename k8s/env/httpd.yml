@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: httpd-config-map
-  namespace: netdata-auto-discovery
+  namespace: netdata-service-discovery-lab
 data:
   httpd.conf: |
     ServerRoot "/usr/local/apache2"
@@ -43,7 +43,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: httpd
-  namespace: netdata-auto-discovery
+  namespace: netdata-service-discovery-lab
 spec:
   replicas: 1
   selector:

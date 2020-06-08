@@ -2,15 +2,16 @@ module k8s-lab-env
 
 go 1.14
 
+replace k8s.io/client-go => k8s.io/client-go v0.18.3
+
 require (
 	github.com/encryptio/alias v0.0.0-20151210173825-4f70d72df1d4
+	github.com/imdario/mergo v0.3.9 // indirect
 	github.com/sirupsen/logrus v1.5.0
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
-	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	k8s.io/api v0.17.4
-	k8s.io/apimachinery v0.17.4
+	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
+	k8s.io/api v0.18.3
+	k8s.io/apimachinery v0.18.3
 	k8s.io/client-go v11.0.0+incompatible
-	k8s.io/utils v0.0.0-20200322164244-327a8059b905 // indirect
+	k8s.io/utils v0.0.0-20200603063816-c1c6865ac451 // indirect
 )
-
-replace k8s.io/client-go => k8s.io/client-go v0.17.0
