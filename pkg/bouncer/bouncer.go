@@ -1,6 +1,7 @@
 package bouncer
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -44,7 +45,7 @@ func (b *Bouncer) Bounce() {
 }
 
 func (b *Bouncer) bounceOnce() error {
-	watch, err := b.Client.Watch(metav1.ListOptions{
+	watch, err := b.Client.Watch(context.TODO(), metav1.ListOptions{
 		LabelSelector: b.LabelSelector,
 		FieldSelector: b.FieldSelector,
 		Watch:         true,
@@ -109,7 +110,7 @@ func (b *Bouncer) bounce(name string) {
 			return nil
 		}
 
-		d, err := b.Client.Get(name, metav1.GetOptions{})
+		d, err := b.Client.Get(context.TODO(), name, metav1.GetOptions{})
 		if err != nil {
 			return err
 		}
@@ -123,7 +124,7 @@ func (b *Bouncer) bounce(name string) {
 		}
 
 		log.WithField("name", name).Infof("change replicas: %d => %d", old, *d.Spec.Replicas)
-		_, err = b.Client.Update(d)
+		_, err = b.Client.Update(context.TODO(), d, metav1.UpdateOptions{})
 		return err
 	})
 	if err != nil {
