@@ -18,12 +18,16 @@ import (
 )
 
 type Bouncer struct {
-	LabelSelector string
-	FieldSelector string
-	RetryTimeout  time.Duration
-	BounceEvery   time.Duration
-	Client        clientappsv1.DeploymentInterface
-	DryRun        bool
+	Client            clientappsv1.DeploymentInterface
+	LabelSelector     string
+	FieldSelector     string
+	RetryTimeout      time.Duration
+	BounceEvery       time.Duration
+	RandomBouncing    bool
+	MinReplicas       int32
+	MaxReplicas       int32
+	MaxBounceReplicas int32
+	DryRun            bool
 
 	tasks map[string]*task
 }
@@ -105,7 +109,7 @@ func (b *Bouncer) handleDeleted(d *appsv1.Deployment) {
 
 func (b *Bouncer) bounce(name string) {
 	err := retryOnConflict(func() error {
-		if !doBounce() {
+		if b.RandomBouncing && !doBounce() {
 			log.WithField("name", name).Info("skip bouncing")
 			return nil
 		}
@@ -116,11 +120,19 @@ func (b *Bouncer) bounce(name string) {
 		}
 
 		old := *d.Spec.Replicas
-		switch addSub(*d.Spec.Replicas) {
+		v := int32(rand.Intn(int(b.MaxBounceReplicas)-1) + 1)
+
+		switch b.addOrSub(*d.Spec.Replicas) {
 		case add:
-			*d.Spec.Replicas++
+			if *d.Spec.Replicas+v > b.MaxReplicas {
+				v = b.MaxReplicas - *d.Spec.Replicas
+			}
+			*d.Spec.Replicas += v
 		case sub:
-			*d.Spec.Replicas--
+			if *d.Spec.Replicas-v < b.MinReplicas {
+				v = *d.Spec.Replicas - b.MinReplicas
+			}
+			*d.Spec.Replicas -= v
 		}
 
 		log.WithField("name", name).Infof("change replicas: %d => %d", old, *d.Spec.Replicas)
@@ -132,11 +144,21 @@ func (b *Bouncer) bounce(name string) {
 	}
 }
 
+func (b *Bouncer) addOrSub(replicas int32) uint32 {
+	switch {
+	case replicas >= b.MaxReplicas:
+		return sub
+	case replicas <= b.MinReplicas:
+		return add
+	default:
+		return addSubProbability()
+	}
+}
+
 func retryOnConflict(f func() error) error {
 	return retry.RetryOnConflict(retry.DefaultRetry, f)
 }
 
-const maxReplicas = 3
 const add = 0
 const sub = 1
 
@@ -145,16 +167,6 @@ var (
 	doBounce            = func() bool { return doBounceProbability() == 0 }
 
 	addSubProbability = mustProbability(5, 5)
-	addSub            = func(current int32) uint32 {
-		switch {
-		case current >= maxReplicas:
-			return sub
-		case current <= 1:
-			return add
-		default:
-			return addSubProbability()
-		}
-	}
 )
 
 func mustProbability(a, b float64, rest ...float64) func() uint32 {
