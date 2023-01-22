@@ -5,8 +5,8 @@ go 1.19
 require (
 	github.com/encryptio/alias v0.0.0-20151210173825-4f70d72df1d4
 	github.com/sirupsen/logrus v1.9.0
-	k8s.io/api v0.26.0
-	k8s.io/apimachinery v0.26.0
+	k8s.io/api v0.26.1
+	k8s.io/apimachinery v0.26.1
 	k8s.io/client-go v0.26.0
 )
 
