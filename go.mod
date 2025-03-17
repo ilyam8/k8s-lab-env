@@ -1,12 +1,13 @@
 module k8s-lab-env
 
 go 1.19
+toolchain go1.24.1
 
 require (
 	github.com/encryptio/alias v0.0.0-20151210173825-4f70d72df1d4
 	github.com/sirupsen/logrus v1.9.3
-	k8s.io/api v0.32.2
-	k8s.io/apimachinery v0.32.2
+	k8s.io/api v0.32.3
+	k8s.io/apimachinery v0.32.3
 	k8s.io/client-go v0.32.2
 )
 
