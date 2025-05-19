@@ -7,8 +7,8 @@ toolchain go1.24.1
 require (
 	github.com/encryptio/alias v0.0.0-20151210173825-4f70d72df1d4
 	github.com/sirupsen/logrus v1.9.3
-	k8s.io/api v0.33.0
-	k8s.io/apimachinery v0.33.0
+	k8s.io/api v0.33.1
+	k8s.io/apimachinery v0.33.1
 	k8s.io/client-go v0.33.0
 )
 
